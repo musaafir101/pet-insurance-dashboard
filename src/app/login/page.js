@@ -14,6 +14,12 @@ export default function LoginPage() {
       // Store authentication status in sessionStorage
       sessionStorage.setItem("isAuthenticated", "true");
 
+      // Generate a unique user ID for this session
+      const sessionId = `mock-${crypto.randomUUID()}`;
+      localStorage.setItem("chatUserId", sessionId);
+
+      console.log("Logged in with Session ID:", sessionId);
+
       router.push("/"); // Redirect to dashboard
     } else {
       alert("Invalid credentials");

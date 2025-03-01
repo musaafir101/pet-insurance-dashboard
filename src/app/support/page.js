@@ -85,9 +85,6 @@ export default function SupportPage() {
       {/* Floating Live Chat Button */}
       <div className="fixed bottom-5 right-5">
         <ChatBox />
-        {/* <button className="bg-blue-500 text-white px-5 py-2 rounded-full shadow-lg hover:bg-blue-600 transition-all">
-          💬 Live Chat
-        </button> */}
       </div>
     </div>
   );
