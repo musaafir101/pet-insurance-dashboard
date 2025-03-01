@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+.dark .card {
+  background-color: #1e2939;
+}
+
+.dark .text-pet {
+  color: #fff;
+}
