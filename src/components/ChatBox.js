@@ -15,53 +15,32 @@ export default function ChatBox() {
   const [input, setInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 
-  // Generate or fetch unique user ID
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      let userId = localStorage.getItem("chatUserId");
-      if (!userId) {
-        userId = `User-${Math.floor(Math.random() * 10000)}`;
-        localStorage.setItem("chatUserId", userId);
-      }
-    }
-  }, []);
-
+  // Fetch unique user ID from localStorage
   const chatUserId =
     typeof window !== "undefined"
       ? localStorage.getItem("chatUserId")
       : "Guest";
 
-  // Fetch messages from Firestore
-  const fetchMessages = () => {
+  useEffect(() => {
     const q = query(collection(db, "messages"), orderBy("timestamp", "asc"));
-    return onSnapshot(q, (snapshot) => {
+    const unsubscribe = onSnapshot(q, (snapshot) => {
       setMessages(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
     });
-  };
 
-  // Use fetchMessages in useEffect
-  useEffect(() => {
-    const unsubscribe = fetchMessages();
-    return () => unsubscribe(); // Cleanup on unmount
+    return () => unsubscribe();
   }, []);
 
-  // Send message
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    try {
-      await addDoc(collection(db, "messages"), {
-        text: input,
-        userId: chatUserId,
-        timestamp: serverTimestamp(),
-      });
+    await addDoc(collection(db, "messages"), {
+      text: input,
+      userId: chatUserId, // Set sender to unique user ID
+      timestamp: serverTimestamp(),
+    });
 
-      setInput("");
-    } catch (error) {
-      console.error("Firestore error:", error);
-      alert("Error sending message: " + error.message);
-    }
+    setInput("");
   };
 
   return (
@@ -88,11 +67,11 @@ export default function ChatBox() {
               <p
                 key={msg.id}
                 className={`mb-1 text-sm ${
-                  msg.userId === chatUserId ? "text-blue-500" : "text-gray-700"
+                  msg.sender === chatUserId ? "text-blue-500" : "text-gray-700"
                 }`}
               >
                 <strong>
-                  {msg.userId === chatUserId ? "You" : msg.userId}:
+                  {msg.sender === chatUserId ? "You" : msg.sender}:
                 </strong>{" "}
                 {msg.text}
               </p>
